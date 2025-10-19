@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetBeat Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f3f4f6;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .slides-container {
+            flex: 1;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+        }
+        
+        .slide.active {
+            opacity: 1;
+        }
+        
+        .slide-intro {
+            background: linear-gradient(to bottom right, #2563eb, #9333ea);
+            color: white;
+            text-align: center;
+        }
+        
+        .slide-summary {
+            background: linear-gradient(to bottom right, #059669, #2563eb);
+            color: white;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 3.75rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        
+        h2 {
+            font-size: 2.25rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .stat-box {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 1.125rem;
+            opacity: 0.8;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .card {
+            background: #f9fafb;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #2563eb;
+            border-radius: 4px;
+            transition: width 1.5s ease-out;
+        }
+        
+        .progress-fill.green {
+            background: #059669;
+        }
+        
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .market-box {
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .market-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 0.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        
+        .market-icon.gray {
+            background: #f3f4f6;
+            color: #9ca3af;
+        }
+        
+        .market-icon.green {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .market-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        
+        .market-status {
+            font-size: 0.75rem;
+        }
+        
+        .green-text {
+            color: #059669;
+        }
+        
+        .gray-text {
+            color: #9ca3af;
+        }
+        
+        .controls {
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 1rem;
+        }
+        
+        .controls-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .control-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        button {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        
+        .btn-nav {
+            background: #f3f4f6;
+            padding: 0.5rem 1rem;
+        }
+        
+        .btn-nav:hover {
+            background: #e5e7eb;
+        }
+        
+        .btn-nav:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .progress-dots {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            margin: 0 2rem;
+        }
+        
+        .dot {
+            height: 8px;
+            flex: 1;
+            background: #e5e7eb;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        .dot.active {
+            background: #2563eb;
+        }
+        
+        .slide-info {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .timer {
+            min-width: 150px;
+            text-align: right;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+        
+        .fade-in-delay-1 {
+            animation-delay: 1s;
+            opacity: 0;
+        }
+        
+        .fade-in-delay-2 {
+            animation-delay: 2s;
+            opacity: 0;
+        }
+        
+        .fade-in-delay-3 {
+            animation-delay: 3s;
+            opacity: 0;
+        }
+        
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .alert-box {
+            background: #d1fae5;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .alert-box p {
+            color: #065f46;
+            font-size: 1.125rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="slides-container">
+            <!-- Slide 1: Intro -->
+            <div class="slide slide-intro active">
+                <div style="max-width: 1000px;">
+                    <h1 class="fade-in">FleetBeat × ITD Dimension</h1>
+                    <p class="subtitle fade-in fade-in-delay-1">
+                        Spinning out a high-margin SaaS from a profitable dev shop to democratize fleet intelligence
+                    </p>
+                    <div class="stats-grid fade-in fade-in-delay-2">
+                        <div class="stat-box">
+                            <div class="stat-value">$3.2M</div>
+                            <div class="stat-label">Revenue</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">71%</div>
+                            <div class="stat-label">Margins</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">80+</div>
+                            <div class="stat-label">Engineers</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">$57B</div>
+                            <div class="stat-label">TAM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Financial -->
+            <div class="slide">
+                <div style="width: 100%; max-width: 1200px;">
+                    <h2>Financial Performance & Growth</h2>
+                    <div class="content-grid">
+                        <div class="card">
+                            <h3>Current Revenue</h3>
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>ITD Dimension</span>
+                                    <span style="font-weight: bold;">$3M</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0;" data-width="94"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>FleetBeat SaaS</span>
+                                    <span style="font-weight: bold;">$200K</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill green" style="width: 0;" data-width="6"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="text-align: center;">
+                            <h3>5-Year Growth</h3>
+                            <div style="margin-top: 2rem;">
+                                <div style="font-size: 3rem; font-weight: bold; color: #059669;">250x</div>
+                                <div style="font-size: 1.125rem; margin-top: 0.5rem;">FleetBeat Revenue Growth</div>
+                                <div style="font-size: 0.875rem; color: #6b7280; margin-top: 1rem;">From $200K to $50M by 2028</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Market -->
+            <div class="slide">
+                <div style="width: 100%; max-width: 1200px;">
+                    <h2>$57B Underserved SMB Market</h2>
+                    <p style="font-size: 1.25rem; color: #6b7280; margin-bottom: 2rem;">
+                        Enterprise solutions require ERP integration, leaving 85% of fleets without modern telematics
+                    </p>
+                    <div class="market-grid">
+                        <div class="market-box">
+                            <div class="market-icon gray">🏢</div>
+                            <div style="font-weight: 600;">Enterprise</div>
+                            <div class="market-value">$8B</div>
+                            <div class="market-status gray-text">✗ ERP Required</div>
+                        </div>
+                        <div class="market-box">
+                            <div class="market-icon green">🏢</div>
+                            <div style="font-weight: 600;">Mid-Market</div>
+                            <div class="market-value">$12B</div>
+                            <div class="market-status green-text">✓ FleetBeat</div>
+                        </div>
+                        <div class="market-box">
+                            <div class="market-icon green">🏠</div>
+                            <div style="font-weight: 600;">Local Service</div>
+                            <div class="market-value">$18B</div>
+                            <div class="market-status green-text">✓ FleetBeat</div>
+                        </div>
+                        <div class="market-box">
+                            <div class="market-icon green">📦</div>
+                            <div style="font-weight: 600;">Last-Mile</div>
+                            <div class="market-value">$15B</div>
+                            <div class="market-status green-text">✓ FleetBeat</div>
+                        </div>
+                        <div class="market-box">
+                            <div class="market-icon green">🔧</div>
+                            <div style="font-weight: 600;">Small Biz</div>
+                            <div class="market-value">$22B</div>
+                            <div class="market-status green-text">✓ FleetBeat</div>
+                        </div>
+                    </div>
+                    <div class="alert-box">
+                        <p>FleetBeat makes enterprise-grade telematics accessible to SMBs</p>
+                        <p style="margin-top: 0.5rem; font-size: 1rem;">No ERP required • Edge AI processing • Works with existing systems</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4: Team -->
+            <div class="slide">
+                <div style="width: 100%; max-width: 1200px;">
+                    <h2>Team & Transition Plan</h2>
+                    <div class="content-grid" style="margin-bottom: 2rem;">
+                        <div class="card" style="background: #dbeafe;">
+                            <h3>Founding Team</h3>
+                            <ul>
+                                <li>• PhD founder displaced from Ukraine, now in LA</li>
+                                <li>• Built ITD Dimension: 80+ engineers, $3M revenue</li>
+                                <li>• Expert in AI, IoT, and embedded hardware</li>
+                                <li>• Key inventor of FleetBeat predictive telematics</li>
+                            </ul>
+                        </div>
+                        <div class="card" style="background: #d1fae5;">
+                            <h3>Transition Plan</h3>
+                            <ul>
+                                <li>• Appoint MD at ITD to maintain $3M revenue</li>
+                                <li>• Recruit U.S. Chief Commercial Officer</li>
+                                <li>• Founder transitions 100% to FleetBeat</li>
+                                <li>• ITD becomes strategic R&D partner</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <p style="font-size: 1.125rem; font-weight: 600; color: #059669;">These risks are transitional, not structural</p>
+                        <p style="color: #6b7280; margin-top: 0.5rem;">Pre-seed funding enables founder focus shift and U.S. go-to-market leadership</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: Summary -->
+            <div class="slide slide-summary">
+                <div style="max-width: 1000px; text-align: center;">
+                    <h2 style="font-size: 3rem;">The FleetBeat Opportunity</h2>
+                    <p style="font-size: 1.25rem; line-height: 1.8; margin-bottom: 2rem;">
+                        A profitable Ukrainian dev shop ($3M revenue, 70% margins) has built cutting-edge fleet telematics that can serve the 85% of fleet operators ignored by enterprise solutions.
+                    </p>
+                    <p style="font-size: 1.5rem; font-weight: 600;">
+                        Transform 80 engineers + proven IP into a $500M+ AI platform
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="controls-inner">
+                <div class="control-buttons">
+                    <button id="playBtn" class="btn-primary">Play</button>
+                    <button id="prevBtn" class="btn-nav">←</button>
+                    <button id="nextBtn" class="btn-nav">→</button>
+                </div>
+                <div style="flex: 1; margin: 0 2rem;">
+                    <div class="progress-dots">
+                        <div class="dot active"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                    <div class="slide-info">
+                        <span id="slideTitle">FleetBeat × ITD Analysis</span> (<span id="slideNumber">1</span>/5)
+                    </div>
+                </div>
+                <div class="timer" id="timer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        let isPlaying = false;
+        let timer = null;
+        let countdownTimer = null;
+        let remainingTime = 0;
+        
+        const slides = [
+            { title: 'FleetBeat × ITD Analysis', duration: 15000 },
+            { title: 'Financial Overview', duration: 20000 },
+            { title: 'Market Opportunity', duration: 25000 },
+            { title: 'Team & Transition', duration: 20000 },
+            { title: 'The Opportunity', duration: 15000 }
+        ];
+
+        const slideElements = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+
+        function showSlide(n) {
+            // Hide all slides
+            slideElements.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // Show current slide
+            slideElements[n].classList.add('active');
+            
+            // Update dots
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index <= n);
+            });
+            
+            // Update info
+            document.getElementById('slideTitle').textContent = slides[n].title;
+            document.getElementById('slideNumber').textContent = n + 1;
+            
+            // Update buttons
+            document.getElementById('prevBtn').disabled = n === 0;
+            document.getElementById('nextBtn').disabled = n === 4;
+            
+            // Animate progress bars on slide 2
+            if (n === 1) {
+                setTimeout(() => {
+                    const fills = slideElements[1].querySelectorAll('.progress-fill');
+                    fills.forEach(fill => {
+                        fill.style.width = fill.getAttribute('data-width') + '%';
+                    });
+                }, 100);
+            }
+        }
+
+        function startCountdown(duration) {
+            remainingTime = Math.ceil(duration / 1000);
+            updateTimerDisplay();
+            
+            countdownTimer = setInterval(() => {
+                remainingTime--;
+                updateTimerDisplay();
+                if (remainingTime <= 0) {
+                    clearInterval(countdownTimer);
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerEl = document.getElementById('timer');
+            if (isPlaying && remainingTime > 0) {
+                timerEl.textContent = `Auto-advance in ${remainingTime}s`;
+            } else {
+                timerEl.textContent = '';
+            }
+        }
+
+        function play() {
+            isPlaying = true;
+            document.getElementById('playBtn').textContent = 'Pause';
+            
+            startCountdown(slides[currentSlide].duration);
+            
+            timer = setTimeout(() => {
+                if (currentSlide < 4) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                    play();
+                } else {
+                    pause();
+                }
+            }, slides[currentSlide].duration);
+        }
+
+        function pause() {
+            isPlaying = false;
+            document.getElementById('playBtn').textContent = 'Play';
+            clearTimeout(timer);
+            clearInterval(countdownTimer);
+            remainingTime = 0;
+            updateTimerDisplay();
+        }
+
+        document.getElementById('playBtn').addEventListener('click', () => {
+            if (isPlaying) {
+                pause();
+            } else {
+                if (currentSlide === 4) {
+                    currentSlide = 0;
+                    showSlide(0);
+                }
+                play();
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            pause();
+            if (currentSlide < 4) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            pause();
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
